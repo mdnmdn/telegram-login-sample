@@ -1,5 +1,5 @@
-use actix_web::{web, App, HttpResponse, HttpServer, middleware::Logger };
 use actix_files::Files;
+use actix_web::{middleware::Logger, web, App, HttpResponse, HttpServer};
 use env_logger::Env;
 use sample_telegram_login::bot_web_hook;
 
@@ -18,10 +18,13 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     HttpServer::new(move || {
         App::new()
-          .wrap(Logger::default())
-          .service(bot_web_hook)
-          .route("/wow", web::get().to(move || async { HttpResponse::Ok().body("wow!") }))
-          .service(Files::new("/", "./static").index_file("index.html"))
+            .wrap(Logger::default())
+            .service(bot_web_hook)
+            .route(
+                "/wow",
+                web::get().to(move || async { HttpResponse::Ok().body("wow!") }),
+            )
+            .service(Files::new("/", "./static").index_file("index.html"))
     })
     .bind(binding)?
     .workers(2)
